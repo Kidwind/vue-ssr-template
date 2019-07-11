@@ -71,7 +71,26 @@ module.exports = {
         headers: { 'Access-Control-Allow-Origin': '*' }
     },
 
+    css: {
+        extract: false,
+        loaderOptions: {
+            less: {
+                javascriptEnabled: true
+            }
+        }
+    },
+
     configureWebpack: () => {
         return TARGET_NODE ? serverConfig : clientConfig;
+    },
+
+    chainWebpack: config => {
+        config.module
+            .rule('vue')
+            .use('vue-loader')
+            .tap(options => {
+                options.optimizeSSR = false;
+                return options;
+            });
     }
 };
