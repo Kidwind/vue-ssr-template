@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <div v-if="!!data">{{ data.title }}</div>
-        <img alt="Vue logo" src="../assets/logo.png">
+        <img alt="Vue logo" src="@/assets/logo.png">
         <HelloWorld msg="Welcome to Your Vue.js App"/>
     </div>
 </template>
@@ -10,19 +10,7 @@
 import { mapState } from 'vuex';
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue';
-
-const viewStore = {
-    name: 'home',
-    namespaced: true,
-    state: () => ({
-        data: null
-    }),
-    mutations: {
-        setData (state, data) {
-            state.data = data;
-        }
-    }
-};
+import viewStore from './store';
 
 export default {
     name: 'home',
@@ -33,23 +21,12 @@ export default {
 
     computed: {
         ...mapState(viewStore.name, [
+            'initial',
             'data'
         ])
     },
 
     methods: {
-        hasStore () {
-            return !!this.$store.state[viewStore.name];
-        },
-
-        registerStore () {
-            this.$store.registerModule(viewStore.name, viewStore, { preserveState: this.hasStore() });
-        },
-
-        unregisterStore () {
-            this.$store.unregisterModule(viewStore.name);
-        },
-
         async loadData () {
             const store = this.$store;
 
@@ -64,6 +41,7 @@ export default {
             console.info(data);
 
             store.commit(`${viewStore.name}/setData`, data);
+            store.commit(`${viewStore.name}/setInitial`);
 
             return data;
         }
@@ -71,28 +49,14 @@ export default {
 
     // Server-side only
     serverPrefetch () {
-        this.registerStore();
         return this.loadData();
     },
 
     // Client-side only
     mounted () {
-        // We already incremented 'count' on the server
-        // We know by checking if the 'foo' state already exists
-        const alreadyPrefetch = this.hasStore();
-
-        // We register the foo module
-        this.registerStore();
-
-        if (!alreadyPrefetch) {
+        if (!this.initial) {
             this.loadData();
         }
-    },
-
-    // IMPORTANT: avoid duplicate module registration on the client
-    // when the route is visited multiple times.
-    destroyed () {
-        this.unregisterStore();
     }
 };
 </script>
