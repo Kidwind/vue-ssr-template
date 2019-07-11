@@ -11,7 +11,7 @@ const PORT = process.env.NODE_PORT ? parseInt(process.env.NODE_PORT) : 3000;
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const template = fs.readFileSync(resolve(isDev ? '../public/index.ssr.html' : '../dist/index.ssr.html'), 'utf-8');
+const template = fs.readFileSync(resolve(isDev ? '../public/index.ssr.html' : '../index.ssr.html'), 'utf-8');
 const { createBundleRenderer } = require('vue-server-renderer');
 const setupServer = require(`${
     isDev ? './setup-dev-server' : './setup-prod-server'

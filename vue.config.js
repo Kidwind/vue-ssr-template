@@ -112,7 +112,7 @@ module.exports = {
             .rule('vue')
             .use('vue-loader')
             .tap(options => {
-                options.optimizeSSR = TARGET_NODE;
+                options.optimizeSSR = false;
                 return options;
             });
     }
