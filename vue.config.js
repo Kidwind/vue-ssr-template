@@ -65,6 +65,7 @@ const clientConfig = {
 
 module.exports = {
     outputDir: TARGET_NODE ? 'dist-ssr' : 'dist',
+    assetsDir: 'static',
     devServer: {
         historyApiFallback: true,
         headers: { 'Access-Control-Allow-Origin': '*' }
