@@ -2,8 +2,12 @@ const VueSSRServerPlugin = require('vue-server-renderer/server-plugin');
 const VueSSRClientPlugin = require('vue-server-renderer/client-plugin');
 const nodeExternals = require('webpack-node-externals');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require('path');
+const resolve = file => path.resolve(__dirname, file);
 
 const TARGET_NODE = process.env.BUILD_TARGET === 'node';
+const isDev = process.env.NODE_ENV && process.env.NODE_ENV.indexOf('dev') > -1;
 
 /**
  * 服务器端 webpack 配置。
@@ -60,11 +64,30 @@ const clientConfig = {
         // 此插件在输出目录中
         // 生成 `vue-ssr-client-manifest.json`。
         new VueSSRClientPlugin()
-    ]
+    ].concat(isDev ? [] : [
+        new CopyWebpackPlugin([
+            {
+                from: resolve('./server'),
+                to: resolve('./dist/server'),
+                toType: 'dir'
+            },
+            {
+                from: resolve('./package.json'),
+                to: resolve('./dist')
+            },
+            /* {
+                from: resolve('./package-lock.json'),
+                to: resolve('./dist')
+            }, */
+            {
+                from: resolve('./yarn.lock'),
+                to: resolve('./dist')
+            }
+        ])
+    ])
 };
 
 module.exports = {
-    outputDir: TARGET_NODE ? 'dist-ssr' : 'dist',
     assetsDir: 'static',
     devServer: {
         historyApiFallback: true,
@@ -89,7 +112,7 @@ module.exports = {
             .rule('vue')
             .use('vue-loader')
             .tap(options => {
-                options.optimizeSSR = false;
+                options.optimizeSSR = TARGET_NODE;
                 return options;
             });
     }
