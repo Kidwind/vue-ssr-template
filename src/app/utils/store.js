@@ -1,4 +1,6 @@
-function createModuleStore (name, state) {
+import { mapState, mapMutations } from 'vuex';
+
+function createViewStoreModule (name, state) {
     state = Object.assign({
         initial: false
     }, state);
@@ -18,6 +20,53 @@ function createModuleStore (name, state) {
     };
 }
 
+function createViewStoreMixin (viewStore) {
+    return {
+        computed: {
+            ...mapState(viewStore.name, Object.keys(viewStore.state()))
+        },
+
+        methods: {
+            ...mapMutations(viewStore.name, Object.keys(viewStore.mutations)),
+
+            hasStore () {
+                return !!this.$store.state[viewStore.name];
+            },
+
+            registerStore () {
+                this.$store.registerModule(viewStore.name, viewStore, { preserveState: this.hasStore() });
+            },
+
+            unregisterStore () {
+                this.$store.unregisterModule(viewStore.name);
+            },
+
+            async loadData () {}
+        },
+
+        created () {
+            this.registerStore();
+        },
+
+        // Server-side only
+        serverPrefetch () {
+            return this.loadData();
+        },
+
+        // Client-side only
+        mounted () {
+            if (!this.initial) {
+                this.loadData();
+            }
+        },
+
+        destroyed () {
+            this.unregisterStore();
+        }
+    };
+}
+
 export {
-    createModuleStore
+    createViewStoreModule,
+    createViewStoreMixin
 };

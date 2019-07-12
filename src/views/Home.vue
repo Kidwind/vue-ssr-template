@@ -8,14 +8,15 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
-import { createModuleStore } from '@/app/utils/store';
+import { createViewStoreModule, createViewStoreMixin } from '@/app/utils/store';
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue';
 
-const viewStore = createModuleStore('home', {
+const viewStore = createViewStoreModule('home', {
     data: null
 });
+
+const viewStoreMixin = createViewStoreMixin(viewStore);
 
 export default {
     name: 'home',
@@ -24,31 +25,9 @@ export default {
         HelloWorld
     },
 
-    computed: {
-        ...mapState(viewStore.name, [
-            'initial',
-            'data'
-        ])
-    },
+    mixins: [viewStoreMixin],
 
     methods: {
-        ...mapMutations(viewStore.name, [
-            'setInitial',
-            'setData'
-        ]),
-
-        hasStore () {
-            return !!this.$store.state[viewStore.name];
-        },
-
-        registerStore () {
-            this.$store.registerModule(viewStore.name, viewStore, { preserveState: this.hasStore() });
-        },
-
-        unregisterStore () {
-            this.$store.unregisterModule(viewStore.name);
-        },
-
         async loadData () {
             let data = await new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -79,26 +58,6 @@ export default {
 
             this.setData(data);
         }
-    },
-
-    created () {
-        this.registerStore();
-    },
-
-    // Server-side only
-    serverPrefetch () {
-        return this.loadData();
-    },
-
-    // Client-side only
-    mounted () {
-        if (!this.initial) {
-            this.loadData();
-        }
-    },
-
-    destroyed () {
-        this.unregisterStore();
     }
 };
 </script>
