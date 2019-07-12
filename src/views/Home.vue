@@ -9,9 +9,13 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex';
+import { createModuleStore } from '@/app/utils/store';
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue';
-import viewStore from './store';
+
+const viewStore = createModuleStore('home', {
+    data: null
+});
 
 export default {
     name: 'home',
@@ -77,19 +81,18 @@ export default {
         }
     },
 
+    created () {
+        this.registerStore();
+    },
+
     // Server-side only
     serverPrefetch () {
-        this.registerStore();
         return this.loadData();
     },
 
     // Client-side only
     mounted () {
-        const alreadyPrefetch = this.hasStore();
-
-        this.registerStore();
-
-        if (!alreadyPrefetch) {
+        if (!this.initial) {
             this.loadData();
         }
     },
