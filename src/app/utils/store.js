@@ -2,6 +2,7 @@ import { mapState, mapMutations } from 'vuex';
 
 function createViewStoreModule (name, state) {
     state = Object.assign({
+        // 页面是否已由服务器端渲染
         initial: false
     }, state);
 
@@ -49,8 +50,11 @@ function createViewStoreMixin (viewStore) {
         },
 
         // Server-side only
-        serverPrefetch () {
-            return this.loadData();
+        async serverPrefetch () {
+            let res = await this.loadData();
+            // 标识页面已由服务器端渲染
+            this.setInitial(true);
+            return res;
         },
 
         // Client-side only

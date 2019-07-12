@@ -41,8 +41,6 @@ export default {
             console.info(data);
 
             this.setData(data);
-            this.setInitial(true);
-
             return data;
         },
 
