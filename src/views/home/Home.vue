@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue';
 import viewStore from './store';
@@ -27,9 +27,12 @@ export default {
     },
 
     methods: {
-        async loadData () {
-            const store = this.$store;
+        ...mapMutations(viewStore.name, [
+            'setInitial',
+            'setData'
+        ]),
 
+        async loadData () {
             let data = await new Promise((resolve, reject) => {
                 setTimeout(() => {
                     resolve({
@@ -40,8 +43,8 @@ export default {
 
             console.info(data);
 
-            store.commit(`${viewStore.name}/setData`, data);
-            store.commit(`${viewStore.name}/setInitial`);
+            this.setData(data);
+            this.setInitial(true);
 
             return data;
         }

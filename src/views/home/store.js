@@ -1,17 +1,5 @@
-export default {
-    name: 'home',
-    namespaced: true,
-    state: () => ({
-        initial: false,
-        data: null
-    }),
-    mutations: {
-        setInitial (state) {
-            state.initial = true;
-        },
+import { createModuleStore } from '@/app/utils/store';
 
-        setData (state, data) {
-            state.data = data;
-        }
-    }
-};
+export default createModuleStore('home', {
+    data: null
+});

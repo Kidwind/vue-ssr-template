@@ -4,7 +4,22 @@ import { createRouter } from './router';
 import { createStore } from '@/store';
 import { sync } from 'vuex-router-sync';
 
+const TARGET_NODE = process.env.VUE_ENV === 'server';
+
 Vue.config.productionTip = false;
+
+Vue.mixin({
+    methods: {
+        updatePageMeta (meta) {
+            const ctx = TARGET_NODE ? this.$ssrContext : document;
+            ctx.title = (meta && meta.title) || '';
+            ctx.description = (meta && meta.description) || '';
+            ctx.keywords = (meta && meta.keywords) || '';
+            // for append more meta or link seo need
+            ctx.ssrHeadAddInfo = (meta && meta.ssrHeadAddInfo) || '';
+        }
+    }
+});
 
 // 导出一个工厂函数，用于创建新的
 // 应用程序、router 和 store 实例
