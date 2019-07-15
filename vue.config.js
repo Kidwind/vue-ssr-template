@@ -95,12 +95,7 @@ module.exports = {
     },
 
     css: {
-        extract: false,
-        loaderOptions: {
-            less: {
-                javascriptEnabled: true
-            }
-        }
+        sourceMap: !isDev && !TARGET_NODE // if enable sourceMap:  fix ssr load Critical CSS throw replace of undefind
     },
 
     configureWebpack: () => {
@@ -108,12 +103,53 @@ module.exports = {
     },
 
     chainWebpack: config => {
+        if (TARGET_NODE) {
+            // fix ssr bug: document not found -- https://github.com/Akryum/vue-cli-plugin-ssr/blob/master/lib/webpack.js
+            const isExtracting = config.plugins.has('extract-css');
+            if (isExtracting) {
+                // Remove extract
+                const langs = ['css', 'postcss', 'scss', 'sass', 'less', 'stylus'];
+                const types = ['vue-modules', 'vue', 'normal-modules', 'normal'];
+                for (const lang of langs) {
+                    for (const type of types) {
+                        const rule = config.module.rule(lang).oneOf(type);
+                        rule.uses.delete('extract-css-loader');
+                        // Critical CSS
+                        rule
+                            .use('vue-style')
+                            .loader('vue-style-loader')
+                            .before('css-loader');
+                    }
+                }
+                config.plugins.delete('extract-css');
+            }
+
+            config.module
+                .rule('vue')
+                .use('cache-loader')
+                .tap(options => {
+                    // Change cache directory for server-side
+                    options.cacheIdentifier += '-server';
+                    options.cacheDirectory += '-server';
+                    return options;
+                });
+        }
+
         config.module
             .rule('vue')
             .use('vue-loader')
             .tap(options => {
-                options.optimizeSSR = false;
+                if (TARGET_NODE) {
+                    options.cacheIdentifier += '-server';
+                    options.cacheDirectory += '-server';
+                }
+                options.optimizeSSR = TARGET_NODE;
                 return options;
             });
+
+        // fix ssr hot update bug
+        if (TARGET_NODE) {
+            config.plugins.delete('hmr');
+        }
     }
 };
