@@ -45,6 +45,12 @@ function createViewStoreMixin (viewStore) {
             async loadData () {}
         },
 
+        watch: {
+            '$route' () {
+                this.loadData();
+            }
+        },
+
         created () {
             this.registerStore();
         },
