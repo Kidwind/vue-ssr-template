@@ -11,7 +11,7 @@ Vue.config.productionTip = false;
 Vue.mixin({
     methods: {
         updatePageMeta (meta) {
-            const ctx = TARGET_NODE ? this.$ssrContext : document;
+            const ctx = TARGET_NODE ? this.$ssrContext.pageMeta : document;
             ctx.title = (meta && meta.title) || '';
             ctx.description = (meta && meta.description) || '';
             ctx.keywords = (meta && meta.keywords) || '';

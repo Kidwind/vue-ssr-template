@@ -5,10 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="/static/favicon.ico">
-    <title>{{ title }}</title>
-    <meta name="keywords" content="{{ keywords }}">
-    <meta name="description" content="{{ description }}">
-    {{{ ssrHeadAddInfo }}}
+    <title>{{ pageMeta.title }}</title>
+    <meta name="keywords" content="{{ pageMeta.keywords }}">
+    <meta name="description" content="{{ pageMeta.description }}">
+    {{{ pageMeta.ssrHeadAddInfo }}}
 </head>
 <body>
 <!--vue-ssr-outlet-->

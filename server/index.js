@@ -44,13 +44,15 @@ setupServer.setupServer(app, (bundle, options) => {
 async function ssrRequestHandle (ctx, next) {
     ctx.set('Content-Type', 'text/html');
     const context = {
-        title: 'SSR PAGE TITLE', // default title
-        description: '',
-        keywords: '',
-        ssrHeadAddInfo: '',
         url: ctx.url,
         cookies: ctx.cookie || {}, // for cookie using
-        userAgent: ctx.header['user-agent']
+        userAgent: ctx.header['user-agent'],
+        pageMeta: {
+            title: 'SSR PAGE TITLE', // default title
+            description: '',
+            keywords: '',
+            ssrHeadAddInfo: ''
+        }
     };
 
     try {
