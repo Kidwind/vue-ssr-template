@@ -95,6 +95,7 @@ module.exports = {
     },
 
     css: {
+        extract: !TARGET_NODE,
         sourceMap: !isDev && !TARGET_NODE // if enable sourceMap:  fix ssr load Critical CSS throw replace of undefind
     },
 
@@ -105,6 +106,7 @@ module.exports = {
     chainWebpack: config => {
         if (TARGET_NODE) {
             // fix ssr bug: document not found -- https://github.com/Akryum/vue-cli-plugin-ssr/blob/master/lib/webpack.js
+            /* 改由 css.extract 配置实现
             const isExtracting = config.plugins.has('extract-css');
             if (isExtracting) {
                 // Remove extract
@@ -122,7 +124,7 @@ module.exports = {
                     }
                 }
                 config.plugins.delete('extract-css');
-            }
+            } */
 
             config.module
                 .rule('vue')
