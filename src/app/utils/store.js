@@ -46,12 +46,19 @@ function createViewStoreMixin (viewStore) {
                 this.$store.unregisterModule(viewStore.name);
             },
 
-            async loadData () {}
+            async loadData () {},
+
+            async clientLoadData () {
+                // 这里开始显示处理进度
+                let res = await this.loadData();
+                // 这里结束显示处理进度
+                return res;
+            }
         },
 
         watch: {
             '$route' () {
-                this.loadData();
+                this.clientLoadData();
             }
         },
 
@@ -70,7 +77,7 @@ function createViewStoreMixin (viewStore) {
         // Client-side only
         mounted () {
             if (!this.initial) {
-                this.loadData();
+                this.clientLoadData();
             }
         },
 
