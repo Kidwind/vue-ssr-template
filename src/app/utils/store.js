@@ -49,10 +49,15 @@ function createViewStoreMixin (viewStore) {
             async loadData () {},
 
             async clientLoadData () {
-                // 这里开始显示处理进度
-                let res = await this.loadData();
-                // 这里结束显示处理进度
-                return res;
+                // todo 这里开始显示处理进度
+                try {
+                    return await this.loadData();
+                } catch (err) {
+                    // todo 这里进行额外的异常处理
+                    throw err;
+                } finally {
+                    // todo 这里结束显示处理进度
+                }
             }
         },
 
