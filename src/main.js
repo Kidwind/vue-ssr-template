@@ -17,7 +17,31 @@ Vue.mixin({
             ctx.keywords = (meta && meta.keywords) || '';
             // for append more meta or link seo need
             ctx.ssrHeadAddInfo = (meta && meta.ssrHeadAddInfo) || '';
+        },
+
+        syncPageMeta () {
+            let pageMeta;
+            if (this.$options.pageMeta) {
+                pageMeta = this.$options.pageMeta;
+                if (pageMeta.call) {
+                    pageMeta = pageMeta.call();
+                }
+            }
+
+            if (pageMeta) {
+                this.updatePageMeta(pageMeta);
+            }
         }
+    },
+
+    async serverPrefetch () {
+        // 服务端同步 pageMeta
+        this.syncPageMeta();
+    },
+
+    mounted () {
+        // 客户端同步 pageMeta
+        this.syncPageMeta();
     }
 });
 
