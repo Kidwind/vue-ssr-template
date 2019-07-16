@@ -1,23 +1,27 @@
 import { mapState, mapMutations } from 'vuex';
 
 function createViewStoreModule (name, state) {
-    state = Object.assign({
-        // 页面是否已由服务器端渲染
-        initial: false
-    }, state);
-
-    const mutations = Object.keys(state).reduce((val, key) => {
-        val[`set${key.charAt(0).toUpperCase() + key.substr(1)}`] = (state, data) => {
-            state[key] = data;
-        };
-        return val;
-    }, {});
-
     return {
         name,
         namespaced: true,
-        state: () => (state),
-        mutations: mutations
+        state: () => ({
+            ...Object.assign({
+                // 页面是否已由服务器端渲染
+                initial: false
+            }, state)
+        }),
+        mutations: {
+            ...Object.keys(state).reduce((val, key) => {
+                val[`set${key.charAt(0).toUpperCase() + key.substr(1)}`] = (state, data) => {
+                    state[key] = data;
+                };
+                return val;
+            }, {}),
+
+            setInitial (state, data) {
+                state.initial = data;
+            }
+        }
     };
 }
 
